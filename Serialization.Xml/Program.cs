@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
-namespace Serialization
+namespace Serialization.Xml
 {
     class Program
     {
         static void Main(string[] args)
         {
-            var student = new Student
+            var student = new Student()
             {
                 FirstName = "John",
                 LastName = "Smith",
@@ -24,23 +24,21 @@ namespace Serialization
                     new Grade{Date = DateTime.UtcNow, Mark = 5, Subject = "PE"}
                 }
             };
-
-            using (var stream = File.Open("student.dat", FileMode.Create))
+            using (var stream = File.Open("student.xml", FileMode.Create))
             {
-                var bf = new BinaryFormatter();
-                bf.Serialize(stream, student);
+                var serializer = new XmlSerializer(typeof(Student));
+                serializer.Serialize(stream, student);
             }
 
             student = null;
-
-            using (var stream = File.Open("student.dat", FileMode.Open))
+            using (var stream = File.Open("student.xml", FileMode.Open))
             {
-                var bf = new BinaryFormatter();
-                student = (Student) bf.Deserialize(stream);
+                var serializer = new XmlSerializer(typeof(Student));
+                student = (Student) serializer.Deserialize(stream);
             }
 
             Console.WriteLine(student);
-            
+
             Console.ReadKey();
         }
     }
